@@ -1,0 +1,12 @@
+@import "home"; /* Will import `_home.scss` */
+@import "font-awesome-sprockets"; /* import font-awesome */
+@import "font-awesome";
+@import "bootstrap-sprockets";
+@import "bootstrap";
+@import "search";
+@import "footer";
+
+html, body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+}

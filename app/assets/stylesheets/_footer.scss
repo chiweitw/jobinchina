@@ -1,0 +1,22 @@
+@keyframes show {
+    0% {
+      opacity: 0;
+    }
+  
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  #footer {
+    color: rgba(0, 0, 0, 0.8);
+    font-size: 14px;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  #footer.animate {
+    animation: show 2s;
+  }

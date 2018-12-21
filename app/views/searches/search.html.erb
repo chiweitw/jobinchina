@@ -1,0 +1,58 @@
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+
+        <h1 class="display-4">
+            <%= @keyword.capitalize %>
+        </h1>
+
+        <p class="lead">
+            According to
+            <%= @job_qty %> related job posts...
+            <br> Average salary :
+            <%= @average_salary %> RMB/month<br>
+            <% if @location_qty.size > 3 %>
+            Most opportuinites:
+            <%= @location_qty[0][0] %>,
+            <%= @location_qty[1][0] %>,
+            <%= @location_qty[2][0] %><br>
+            <% end %>
+            <% if @location_salary.size > 3 %>
+            Higest paying:
+            <%= @location_salary[0][0] %>,
+            <%= @location_salary[1][0] %>,
+            <%= @location_salary[2][0] %><br>
+            <% end %>
+
+            <% if @results_en %>
+                <% if @results_en.size > 5 %>
+                Most-demand skills: 
+                <%= @results_en[0][0] %>,
+                <%= @results_en[1][0] %>,
+                <%= @results_en[2][0] %>,
+                <%= @results_en[3][0] %>,
+                <%= @results_en[4][0] %>
+                <% end %>
+            <% end %>
+        </p>
+
+        <a href="\" class="btn btn-primary" title="search other jobs">Search More</a>
+    </div>
+</div>
+
+<div class="chart-container">
+    <div class="chart">
+        <canvas id="pie-chart" width="400" height="400"></canvas>
+    </div>
+    <div class="chart">
+        <canvas id="bar-chart" width="400" height="400"></canvas>
+    </div>
+</div>
+
+<%= content_tag :div, class: "search_page" do %>
+<% end %>
+
+<%= content_tag :div, class: "bar_information", data: {id: 'bar-chart', labels: @location_salary.map {|i| i[0]}.first(10), data: @location_salary.map {|i| i[1]}.first(10), labelText:"Average Salary (RMB/month)",titleText:"AVERAGE SALARY PER LOCATION TOP 10 (RMB)" } do %>
+<% end %>
+
+<%= content_tag :div, class: "pie_information", data: {id: 'pie-chart', labels: @location_qty_percentage.map {|i| i[0]}, data: @location_qty_percentage.map {|i| i[1]}, labelText:"Job (%)", titleText:"JOB OPPORTUNITIES PER LOCATION (%)" } do %>
+<% end %>

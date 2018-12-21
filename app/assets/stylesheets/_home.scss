@@ -1,0 +1,32 @@
+@import "./components/banner";
+@import "./components/form";
+@import "./components/tab";
+
+/* charts in index */
+.chart-section {
+    width: 450px;
+    margin: 0 auto;
+}
+
+@media(max-width: 450px) {
+    .chart-section {
+        width: 90%;
+    }
+}
+
+.summary {
+    margin:0 auto; 
+    padding: 30px;
+    text-align: center;
+    color: grey;
+}
+
+.summary h4:nth-child(odd) {
+    color: rgb(101, 85, 190);
+}
+
+@media(max-width: 775px) {
+    .summary {
+        text-align: initial;
+    }
+}

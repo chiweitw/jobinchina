@@ -1,0 +1,37 @@
+.banner {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 660px;
+    background-color:  rgba(201, 183, 160, 0.7);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.6);
+    color: rgb(0, 0, 0);
+}
+
+form {
+    margin:30px;
+}
+
+@media(max-width: 660px) {
+    .form-container {
+        border-radius: 0;
+        box-shadow: none;
+        border:none;
+    }
+}
+
+form #search-message {
+    color:rgb(255, 255, 255);
+    display:none; 
+    font-size: 30px;
+}
+
+#search-message i {
+    font-size: 26px;
+}

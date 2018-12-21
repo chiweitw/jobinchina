@@ -1,0 +1,14 @@
+.banner {
+    background-image: url('https://images.pexels.com/photos/19043/pexels-photo.jpg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260');
+    background-size: cover;
+    height: calc(100vh - 70px);
+}
+
+@media (max-width: 660px) {
+    .banner {
+        height:initial;
+        background-image: none !important;
+        background: rgba(201, 183, 160, 0.7);       
+    }
+}
+
