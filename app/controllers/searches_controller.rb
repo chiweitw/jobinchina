@@ -10,8 +10,6 @@ class SearchesController < ApplicationController
         puts "start search..."
         puts "this is params: #{params}"
         puts "this is search_params: #{search_params}"
-
-
         puts search_params['keyword']
         # keyword validations
         @keyword = search_params['keyword'].scan(/\w*/).join(" ")
@@ -28,7 +26,8 @@ class SearchesController < ApplicationController
         end
 
         puts "this is keyword: #{@keyword}"
-
+        @search = Search.create!(keyword: @keyword)
+        
         # check if the keyword already be searched
         if Search.find_by(keyword: @keyword)
             puts "already be searched before"
@@ -36,7 +35,7 @@ class SearchesController < ApplicationController
         # if is a new keyword...
         else
             puts "start scraping..."
-            @search = Search.create!(keyword: @keyword)
+            
             scraper(@search)
             if @search.jobs.empty? || @search.jobs.size < 5
                 puts "not enough information... please search again"
