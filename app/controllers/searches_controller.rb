@@ -26,7 +26,6 @@ class SearchesController < ApplicationController
         end
 
         puts "this is keyword: #{@keyword}"
-        @search = Search.create!(keyword: @keyword)
         
         # check if the keyword already be searched
         if Search.find_by(keyword: @keyword)
@@ -35,8 +34,10 @@ class SearchesController < ApplicationController
         # if is a new keyword...
         else
             puts "start scraping..."
+            @search = Search.create!(keyword: @keyword)
             
             scraper(@search)
+
             if @search.jobs.empty? || @search.jobs.size < 5
                 puts "not enough information... please search again"
                 Search.last.destroy
