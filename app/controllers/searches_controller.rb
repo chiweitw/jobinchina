@@ -30,6 +30,7 @@ class SearchesController < ApplicationController
         # check if the keyword already be searched
         if Search.find_by(keyword: @keyword)
             puts "already be searched before"
+            @search = Search.create!(keyword: @keyword)
             @search = Search.find_by(keyword: @keyword)
         # if is a new keyword...
         else
