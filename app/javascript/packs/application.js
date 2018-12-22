@@ -102,6 +102,11 @@ if (document.querySelector('.home_page')){
             alert("Must be filled out");
             return false;
         }
+        if (!/^[a-zA-Z]*$/g.test(x)) {
+            alert("Invalid characters");
+            document.forms['new_search']['search_keyword'].focus();
+            return false;
+        }
         let search_input = document.querySelector('#search_keyword');
         let search_message = document.querySelector('#search-message');
         search_input.style.display = 'none';
