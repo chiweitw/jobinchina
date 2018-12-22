@@ -8,18 +8,30 @@
 </div>
 
 <div class="tabs">
-    <div class="tab" id="show_popular" data-state = "active">
-        <h3>Most Poplar</h3>
-    </div>
-    <div class="tab" id="show_opportunity">
-        <h3>Most Opportuinies</h3>
-    </div>
-    <div class="tab" id="show_high_salary_job">
-        <h3>High Pay Jobs</h3>
-    </div>
-    <div class="tab" id="show_high_salary_location">
-        <h3>High Pay Locations</h3>
-    </div>
+  <div class="tab" id="show_popular" data-state = "active">
+    <h3>Most Poplar</h3>
+    <% unless @search_rank.empty? %>
+    <p>No.1 <%= @search_rank[0][0] %></p>
+    <% end %>
+  </div>
+  <div class="tab" id="show_opportunity">
+    <h3>Most Opportuinies</h3>
+    <% unless @chance_rank.empty? %>
+    <p>No.1 <%= @chance_rank[0][0] %></p>
+    <% end %>
+  </div>
+  <div class="tab" id="show_high_salary_job">
+    <h3>High Pay Jobs</h3>
+    <% unless @job_salary_rank.empty? %>
+    <p>No.1 <%= @job_salary_rank[0][0] %></p>
+    <% end %>
+  </div>
+  <div class="tab" id="show_high_salary_location">
+    <h3>High Pay Locations</h3>
+    <% unless @location_salary_rank.empty? %>
+    <p>No.1 <%= @location_salary_rank[0][0] %></p>
+    <% end %>
+  </div>
 </div>
 
 <div class="chart-section">
