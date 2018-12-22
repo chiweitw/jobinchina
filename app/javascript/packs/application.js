@@ -1,4 +1,6 @@
-console.log('Hello World from Webpacker')
+// console.log('Hello World from Webpacker')
+
+
 
 if (document.querySelector('.search_page')){
     let bar_id = document.querySelector('.bar_information').getAttribute("data-id")
@@ -25,7 +27,7 @@ Chart.defaults.global.defaultFontSize = 16;
 
 // barChart
 function barChart(id, labels, data, labelText, titleText) {
-    console.log('bar Chart function...')
+    // console.log('bar Chart function...')
     new Chart(document.getElementById(id), {
         type: 'horizontalBar',
         data: {
@@ -77,7 +79,7 @@ function pieChart(id, labels, data, labelText, titleText) {
 // show chart
 
 function show(id){
-    console.log(id)
+    // console.log(id)
     let bar_id = document.querySelector(`.${id}`).getAttribute("data-id")
     let bar_labels = JSON.parse(document.querySelector(`.${id}`).getAttribute("data-labels"))
     let bar_data = JSON.parse(document.querySelector(`.${id}`).getAttribute("data-data"))
@@ -90,6 +92,24 @@ function show(id){
 
 
 if (document.querySelector('.home_page')){
+
+    // VALIDATE USER SEARCH TERM
+    let form = document.querySelector('.form')
+    form.onsubmit = function validateForm() {
+        // console.log('validating....')
+        let x = document.forms['new_search']['search_keyword'].value
+        if (x.trim() == "") {
+            alert("Must be filled out");
+            return false;
+        }
+        let search_input = document.querySelector('#search_keyword');
+        let search_message = document.querySelector('#search-message');
+        search_input.style.display = 'none';
+        search_message.style.display = 'block';
+    }
+
+
+
     show('show_popular');    
     let tabs = document.querySelectorAll('.tab');
     let chart_section = document.querySelector('.chart-section');
