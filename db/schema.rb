@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_21_133939) do
+ActiveRecord::Schema.define(version: 2018_12_27_134438) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,7 +24,18 @@ ActiveRecord::Schema.define(version: 2018_12_21_133939) do
     t.bigint "search_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "keyword", default: ""
     t.index ["search_id"], name: "index_jobs_on_search_id"
+  end
+
+  create_table "keywords", force: :cascade do |t|
+    t.string "name"
+    t.integer "searched_times", default: 0
+    t.float "average_salary", default: 0.0
+    t.text "hot_places", default: [], array: true
+    t.text "skills", default: [], array: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "searches", force: :cascade do |t|
@@ -32,6 +43,20 @@ ActiveRecord::Schema.define(version: 2018_12_21_133939) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.float "average_salary"
+    t.text "skills"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "admin"
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "jobs", "searches"

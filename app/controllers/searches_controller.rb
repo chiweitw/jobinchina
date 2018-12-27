@@ -34,7 +34,7 @@ class SearchesController < ApplicationController
 
     def new
         @search = Search.create!(keyword: search_params['keyword'])
-
+        
         # keyword validate
         puts "start search..."
         puts "this is params: #{params}"
@@ -58,6 +58,8 @@ class SearchesController < ApplicationController
         if Search.where(keyword: @keyword).size > 1
             puts "already be searched before"
             # Search.create!(keyword: @keyword)
+
+           
             @search = Search.find_by(keyword: @keyword)
 
         # if is a new keyword...
@@ -65,8 +67,11 @@ class SearchesController < ApplicationController
             puts "start scraping..."
             # @search = Search.create!(keyword: @keyword)
             @search.keyword = @keyword
-            @search.save
+            
             scraper(@search)
+        end
+        if @search.skills = []
+            GetKeywordsJob.perform_later(@search.id)
         end
         redirect_to action: "show", id: @search
     end
@@ -102,13 +107,23 @@ class SearchesController < ApplicationController
             dates = nokogiri_object.css("div.el > span.t5").map { |element| element.text }
 
             (0...titles.size).each do |i|
-                job = {name: titles[i], url: title_links[i], company: companys[i+1], location: locations[i+1], salary: salary_converter(salaries[i+1]), search_id: @search[:id]}
+                job = {name: titles[i], url: title_links[i], company: companys[i+1], location: locations[i+1], salary: salary_converter(salaries[i+1]), search_id: @search[:id], keyword: @search[:keyword]}
                 @job = Job.new(job)
                 @search.jobs << @job
             end
             page < total_page ? page += 1 : break
         end
     end
+
+    # def scrape_get_keyword(url)
+    #     begin
+    #         html_data = open(url).read
+    #         nokogiri_object = Nokogiri::HTML(html_data)
+    #         content = nokogiri_object.css("div.tBorderTop_box").text.gsub(/\s+/, "")
+    #     rescue
+    #         return ""
+    #     end
+    # end
 
     def salary_converter(salary)
         return nil if salary.empty?
@@ -172,5 +187,21 @@ class SearchesController < ApplicationController
         location_salary.select{|k,v| v.size > 3 }.map {|k, v|[k, (v.sum/v.size).round(2)]}.sort_by {|k,v| v}.reverse
         # need at least 3 data per location
     end
+
+    # def count_word_frequency_en(content)
+    #     # for english words
+    #     words = content.scan(/\w*/).select {|word| !word.empty? && word.to_i == 0 && word.size > 1 && word.size <15}
+    #     word_frequency_en = Hash.new(0)
+    #     words.each { |word| word_frequency_en[word.downcase] += 1 }
+
+    #     stopword_file = 'app/assets/stop_word.json'
+    #     file = File.read(stopword_file)
+    #     stop_words = JSON.parse(file)
+
+    #     stop_words.each do |word|
+    #         word_frequency_en.delete_if {|key, value| key == word}
+    #     end
+    #     word_frequency_en
+    # end
   
 end

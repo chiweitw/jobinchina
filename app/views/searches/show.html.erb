@@ -26,15 +26,17 @@
             <%= @location_salary[2][0] %><br>
             <% end %>
 
-            <% if @results_en %>
-                <% if @results_en.size > 5 %>
+            <% if @search.skills %>
+                <% if @search.skills.size > 5 %>
                 Most-demand skills: 
-                <%= @results_en[0][0] %>,
-                <%= @results_en[1][0] %>,
-                <%= @results_en[2][0] %>,
-                <%= @results_en[3][0] %>,
-                <%= @results_en[4][0] %>
+                <%= @search.skills[0][0] %>,
+                <%= @search.skills[1][0] %>,
+                <%= @search.skills[2][0] %>,
+                <%= @search.skills[3][0] %>,
+                <%= @search.skills[4][0] %>
                 <% end %>
+            <% else  %>
+                Most-demand skills: Collecting data...
             <% end %>
         </p>
 
