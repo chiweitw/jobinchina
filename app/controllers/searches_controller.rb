@@ -55,7 +55,7 @@ class SearchesController < ApplicationController
         puts "this is keyword: #{@keyword}"
         
         # check if the keyword already be searched
-        if Search.find_by(keyword: @keyword)
+        if Search.where(keyword: @keyword).size > 1
             puts "already be searched before"
             # Search.create!(keyword: @keyword)
             @search = Search.find_by(keyword: @keyword)
@@ -65,6 +65,7 @@ class SearchesController < ApplicationController
             puts "start scraping..."
             # @search = Search.create!(keyword: @keyword)
             @search.keyword = @keyword
+            @search.save
             scraper(@search)
         end
         redirect_to action: "show", id: @search
