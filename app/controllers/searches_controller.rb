@@ -6,12 +6,40 @@ class SearchesController < ApplicationController
         @search_qty = Search.all.size
     end
 
-    def search
+    def show
+        puts params
+        @search = Search.find(params[:id])
+        @keyword = @search.keyword
+        @jobs = @search.jobs
+        @search.average_salary = get_average_salary(@jobs)
+        @search.save
+        @job_qty = @jobs.size
+        @average_salary = @search.average_salary
+        @location_qty = location_qty(@jobs)
+        @location_qty_percentage = location_qty_percentage(@jobs).first(9)
+        sum = 0
+
+        @location_qty_percentage.each do |k, v|
+            sum += v
+        end
+        
+        @location_qty_percentage << ['other', 100 - sum]
+        @location_salary = location_salary(@jobs)
+
+        if @search.jobs.size < 5 
+            @message = 'Not enough information!'
+            @search.destroy!
+        end
+    end
+
+    def new
+        @search = Search.create!(keyword: search_params['keyword'])
+
+        # keyword validate
         puts "start search..."
         puts "this is params: #{params}"
         puts "this is search_params: #{search_params}"
         puts search_params['keyword']
-        # keyword validations
         @keyword = search_params['keyword'].scan(/\w*/).join(" ")
         puts "after scan: #{@keyword}"
         
@@ -19,7 +47,6 @@ class SearchesController < ApplicationController
             puts "Chinese..."
             @keyword = search_params['keyword'].strip
             puts @keyword
-            
         else
             puts "English ..."
             @keyword = @keyword.downcase.capitalize.strip
@@ -30,46 +57,18 @@ class SearchesController < ApplicationController
         # check if the keyword already be searched
         if Search.find_by(keyword: @keyword)
             puts "already be searched before"
-            Search.create!(keyword: @keyword)
+            # Search.create!(keyword: @keyword)
             @search = Search.find_by(keyword: @keyword)
+
         # if is a new keyword...
         else
             puts "start scraping..."
-            @search = Search.create!(keyword: @keyword)
-            
+            # @search = Search.create!(keyword: @keyword)
+            @search.keyword = @keyword
             scraper(@search)
-
-            if @search.jobs.empty? || @search.jobs.size < 5
-                puts "not enough information... please search again"
-                Search.last.destroy
-                redirect_to root_path
-            else
-                puts "results more than 5"
-                
-            end
         end
-
-        @jobs = @search.jobs
-        @search.average_salary = get_average_salary(@jobs)
-        @search.save
-        @job_qty = @jobs.size
-        @average_salary = @search.average_salary
-        @location_qty = location_qty(@jobs)
-        @location_qty_percentage = location_qty_percentage(@jobs).first(9)
-        sum = 0
-        @location_qty_percentage.each do |k, v|
-            sum += v
-        end
-        @location_qty_percentage << ['other', 100 - sum]
-        @location_salary = location_salary(@jobs)
-
-        # puts "location_qty: #{@location_qty}"
-        # puts "location_qty_percentage: #{@location_qty_percentage}"
-        # puts "location_salary: #{@location_salary}"
-        # puts "average salary: #{@average_salary}"
+        redirect_to action: "show", id: @search
     end
-
-
 
     private
 
@@ -83,6 +82,7 @@ class SearchesController < ApplicationController
         jobs = []
         page = 1
         total_page = nil
+
         loop do 
             url = "https://search.51job.com/list/000000,000000,0000,00,9,99,#{@search.keyword},2,#{page}.html?lang=c&stype=&postchannel=0000&workyear=99&cotype=99&degreefrom=99&jobterm=99&companysize=99&providesalary=99&lonlat=0%2C0&radius=-1&ord_field=0&confirmdate=9&fromType=&dibiaoid=0&address=&line=&specialarea=00&from=&welfare="
             url = URI.parse(URI.escape(url)) # 避免輸入中文錯誤: URI must be ascii only

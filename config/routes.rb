@@ -3,11 +3,8 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
   root to:'pages#home'
-  post 'searches', to: 'searches#search'
 
-  # Sidekiq Web UI, only for admins.
-  require "sidekiq/web"
-  authenticate :user, lambda { |u| u.admin } do
-    mount Sidekiq::Web => '/sidekiq'
-  end
+  post 'searches', to: 'searches#new'
+  get 'searches/:id', to: 'searches#show'
+
 end

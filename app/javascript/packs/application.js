@@ -102,15 +102,7 @@ if (document.querySelector('.home_page')){
             alert("Must be filled out");
             return false;
         }
- 
-        // console.log(/^[a-zA-Z]*$/g.test(x))
-        // console.log(x.replace(/[\u4e00-\u9fa5]/g,'').length == 0)
 
-        if ( !(/^[a-zA-Z]*$/g.test(x) || x.replace(/[\u4e00-\u9fa5]/g,'').length == 0) ) {
-            alert("Invalid characters");
-            document.forms['new_search']['search_keyword'].focus();
-            return false;
-        }
         let search_input = document.querySelector('#search_keyword');
         let search_message = document.querySelector('#search-message');
         search_input.style.display = 'none';
