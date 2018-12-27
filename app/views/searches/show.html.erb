@@ -4,6 +4,9 @@
         <h1 class="display-4">
             <%= @keyword.capitalize %>
         </h1>
+        <% if @message %>
+            <h2 class= "message"><%= @message %></h2>
+        <% end %>
 
         <p class="lead">
             According to
