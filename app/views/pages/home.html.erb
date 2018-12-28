@@ -40,13 +40,13 @@
 
 <div class="summary">
         <% if @search_rank.size > 3 %>
-            <h4>Base on analysis of <%= @job_qty %> unique job posts from <%= @search_qty %> searches so far...</h4>
+            <h4>According to the analysis of <%= @job_qty %> unique job posts from <%= @search_qty %> searches so far...</h4>
             <h4>The most popular keywords are <%= @search_rank[0][0] %>, <%= @search_rank[1][0] %>, <%= @search_rank[2][0] %>...
             <br>
             <%= @chance_rank[0][0] %>, <%= @chance_rank[1][0] %>, <%= @chance_rank[2][0] %>... currently provides most opportunities!</h4>
-            <h4>Pursue high salary?</h4>
+            <h4>Want to earn more money?</h4>
             <h4>Find jobs related to <%= @job_salary_rank[0][0] %>, <%= @job_salary_rank[1][0] %>, or <%= @job_salary_rank[2][0] %>!
-            <br>You can get higher salary in <%= @location_salary_rank[0][0] %>, <%= @location_salary_rank[1][0] %>, and <%= @location_salary_rank[2][0] %>!<h4>Of course, no guarantee of better life quality...</h4>
+            <br>You can get higher salary in <%= @location_salary_rank[0][0] %>, <%= @location_salary_rank[1][0] %>, and <%= @location_salary_rank[2][0] %>!<h4>Of course, no guarantee of better life quality.</h4>
         <% end %>
 </div>
 
