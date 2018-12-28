@@ -13,14 +13,10 @@ class PagesController < ApplicationController
 
   def search_ranking
     search_ranking = {}
-    searches = Search.all
+    searches = Dashboard.all
     searches.each do |search|
         keyword = search[:keyword]
-        if search_ranking[keyword].nil?
-            search_ranking[keyword] = 1
-        else
-            search_ranking[keyword] += 1
-        end
+        search_ranking[keyword] = search.searched_times
     end
     search_ranking = search_ranking.sort_by{|k, v| v}.reverse.to_a 
   end
