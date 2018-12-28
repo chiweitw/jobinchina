@@ -38,7 +38,7 @@ class PagesController < ApplicationController
 
   def salary_ranking
       salary_ranking = {}
-      searches = Search.all
+      searches = Dashboard.all
       searches.each do |search|
           salary_ranking[search[:keyword]] = search[:average_salary] || 0
       end
