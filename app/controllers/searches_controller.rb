@@ -8,71 +8,79 @@ class SearchesController < ApplicationController
 
     def show
         puts params
-        @search = Search.find(params[:id])
-        @keyword = @search.keyword
-        @jobs = @search.jobs
-        @search.average_salary = get_average_salary(@jobs)
-        @search.save
+        
+        @keyword = Search.find(params[:id]).keyword
+        # @keyword = @search.keyword
+
+        puts "search keyword .... #{@keyword}"
+
+        @record = Dashboard.find_by(keyword: @keyword)
+    
+
+        puts "find 1 record... #{@record} #{@record.keyword}"
+
+        @jobs = Search.find_by(keyword: @keyword).jobs
         @job_qty = @jobs.size
-        @average_salary = @search.average_salary
-        @location_qty = location_qty(@jobs)
+
+        puts @record
+        # @average_salary = @search.average_salary
+
+        @record.most_opportunities = location_qty(@jobs)
+        @record.highest_paying = location_salary(@jobs)
+        @record.save
+
         @location_qty_percentage = location_qty_percentage(@jobs).first(9)
         sum = 0
-
         @location_qty_percentage.each do |k, v|
             sum += v
-        end
-        
+        end   
         @location_qty_percentage << ['other', 100 - sum]
-        @location_salary = location_salary(@jobs)
-
-        if @search.jobs.size < 5 
+        
+        puts "job qty... #{@job_qty}"
+        if @job_qty < 5 
             @message = 'Not enough information!'
-            @search.destroy!
         end
     end
 
     def new
-        @search = Search.create!(keyword: search_params['keyword'])
-        
         # keyword validate
-        puts "start search..."
         puts "this is params: #{params}"
         puts "this is search_params: #{search_params}"
         puts search_params['keyword']
+        
         @keyword = search_params['keyword'].scan(/\w*/).join(" ")
         puts "after scan: #{@keyword}"
-        
         if @keyword.empty? || @keyword.strip == ""
             puts "Chinese..."
             @keyword = search_params['keyword'].strip
             puts @keyword
         else
             puts "English ..."
-            @keyword = @keyword.downcase.capitalize.strip
+            @keyword = @keyword.capitalize.strip
         end
+
+        @search = Search.create!(keyword: @keyword)
+        # @search.keyword = @keyword
+        # @search.save
 
         puts "this is keyword: #{@keyword}"
         
         # check if the keyword already be searched
-        if Search.where(keyword: @keyword).size > 1
+        if Dashboard.find_by(keyword: @keyword)
             puts "already be searched before"
-            # Search.create!(keyword: @keyword)
-
-           
-            @search = Search.find_by(keyword: @keyword)
-
+            @new_record = Dashboard.find_by(keyword: @keyword)
         # if is a new keyword...
         else
             puts "start scraping..."
-            # @search = Search.create!(keyword: @keyword)
-            @search.keyword = @keyword
-            
             scraper(@search)
+            @new_record = Dashboard.create!(keyword: @keyword)
+            @new_record.average_salary = @search.average_salary
+            
+            GetKeywordsJob.perform_later(@new_record.id)
         end
-        if @search.skills = []
-            GetKeywordsJob.perform_later(@search.id)
-        end
+
+        @new_record.searched_times += 1  
+        @new_record.save      
         redirect_to action: "show", id: @search
     end
 
@@ -111,8 +119,14 @@ class SearchesController < ApplicationController
                 @job = Job.new(job)
                 @search.jobs << @job
             end
+
+            @search.average_salary = get_average_salary(@search.jobs)
+            @search.save
             page < total_page ? page += 1 : break
         end
+
+        puts "finish scrappign jobs. Search results: "
+        puts @search
     end
 
     # def scrape_get_keyword(url)

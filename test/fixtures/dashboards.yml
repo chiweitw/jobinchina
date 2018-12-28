@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  keyword: MyString
+  average_salary: 1.5
+  searched_times: 1
+  most_opportunities: MyText
+  highest_paying: MyText
+  hot_skills: MyText
+
+two:
+  keyword: MyString
+  average_salary: 1.5
+  searched_times: 1
+  most_opportunities: MyText
+  highest_paying: MyText
+  hot_skills: MyText

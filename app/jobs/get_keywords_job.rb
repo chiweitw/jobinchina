@@ -1,14 +1,14 @@
 class GetKeywordsJob < ApplicationJob
   queue_as :default
 
-  def perform(search_id)
+  def perform(new_record_id)
     # Do something later
 
     puts "start skill analysis"
+    @dashboard = Dashboard.find(new_record_id)
+    @search = Search.find_by(keyword: @dashboard.keyword)
 
-
-    @search = Search.find(search_id)
-
+    puts @dashboard
     puts @search
 
     results_en = {}
@@ -22,11 +22,8 @@ class GetKeywordsJob < ApplicationJob
     end
     results_en = results_en.sort_by{|k, v| v}.reverse.first(20)
     puts results_en
-
-    @search.skills = results_en
-    @search.save
-
-    puts results_en
+    @dashboard.hot_skills = results_en
+    @dashboard.save
   end
 
   private

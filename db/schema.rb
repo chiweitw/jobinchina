@@ -10,10 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_27_134438) do
+ActiveRecord::Schema.define(version: 2018_12_28_053247) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "dashboards", force: :cascade do |t|
+    t.string "keyword"
+    t.float "average_salary", default: 0.0
+    t.integer "searched_times", default: 0
+    t.text "most_opportunities", default: [], array: true
+    t.text "highest_paying", default: [], array: true
+    t.text "hot_skills"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "jobs", force: :cascade do |t|
     t.string "name"
@@ -26,16 +37,6 @@ ActiveRecord::Schema.define(version: 2018_12_27_134438) do
     t.datetime "updated_at", null: false
     t.string "keyword", default: ""
     t.index ["search_id"], name: "index_jobs_on_search_id"
-  end
-
-  create_table "keywords", force: :cascade do |t|
-    t.string "name"
-    t.integer "searched_times", default: 0
-    t.float "average_salary", default: 0.0
-    t.text "hot_places", default: [], array: true
-    t.text "skills", default: [], array: true
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "searches", force: :cascade do |t|
