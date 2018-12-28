@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_28_053247) do
+ActiveRecord::Schema.define(version: 2018_12_27_134438) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,9 +33,11 @@ ActiveRecord::Schema.define(version: 2018_12_28_053247) do
     t.string "url"
     t.string "company"
     t.bigint "search_id"
+    t.bigint "dashboard_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "keyword", default: ""
+    t.index ["dashboard_id"], name: "index_jobs_on_dashboard_id"
     t.index ["search_id"], name: "index_jobs_on_search_id"
   end
 
@@ -60,5 +62,6 @@ ActiveRecord::Schema.define(version: 2018_12_28_053247) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "jobs", "dashboards"
   add_foreign_key "jobs", "searches"
 end

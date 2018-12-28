@@ -7,6 +7,7 @@ class CreateJobs < ActiveRecord::Migration[5.2]
       t.string :url
       t.string :company
       t.references :search, foreign_key: true
+      t.references :dashboard, foreign_key: true
 
       t.timestamps
     end

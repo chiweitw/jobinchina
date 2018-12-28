@@ -9,17 +9,13 @@ class SearchesController < ApplicationController
     def show
         puts params
         
-        @keyword = Search.find(params[:id]).keyword
-        # @keyword = @search.keyword
-
-        puts "search keyword .... #{@keyword}"
-
-        @record = Dashboard.find_by(keyword: @keyword)
+        # @keyword = Search.find(params[:id]).keyword
+        # puts "search keyword .... #{@keyword}"
+        @record = Dashboard.find(params[:id])
+        @keyword = @record.keyword
     
-
         puts "find 1 record... #{@record} #{@record.keyword}"
-
-        @jobs = Search.find_by(keyword: @keyword).jobs
+        @jobs = @record.jobs
         @job_qty = @jobs.size
 
         puts @record
@@ -75,13 +71,14 @@ class SearchesController < ApplicationController
             scraper(@search)
             @new_record = Dashboard.create!(keyword: @keyword)
             @new_record.average_salary = @search.average_salary
+            @new_record.jobs = @search.jobs
             
             GetKeywordsJob.perform_later(@new_record.id)
         end
 
         @new_record.searched_times += 1  
         @new_record.save      
-        redirect_to action: "show", id: @search
+        redirect_to action: "show", id: @new_record
     end
 
     private
