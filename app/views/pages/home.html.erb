@@ -64,7 +64,7 @@
 <%= content_tag :div, class: "show_popular", data: {id: 'chart', labels: @search_rank.map {|i| i[0]}, data: @search_rank.map {|i| i[1]}, labelText:"searches",titleText:"POPULAR SEARCH TOP 10" } do %>
 <% end %>
 
-<%= content_tag :div, class: "show_opportunity", data: {id: 'chart', labels: @chance_rank.map {|i| i[0]}, data: @chance_rank.map {|i| i[1]}, labelText:"percentage(%)",titleText:"MOST OPPORTUNITIES LOCATION TOP 10 (%)" } do %>
+<%= content_tag :div, class: "show_opportunity", data: {id: 'chart', labels: @chance_rank.map {|i| i[0]}, data: @chance_rank.map {|i| i[1]}, labelText:"qty",titleText:"MOST OPPORTUNITIES LOCATION TOP 10" } do %>
 <% end %>
 
 <%= content_tag :div, class: "show_high_salary_job", data: {id: 'chart', labels: @job_salary_rank.map {|i| i[0]}, data: @job_salary_rank.map {|i| i[1]}, labelText:"average salary(RMB/month)",titleText:"HIGH SALARY TOP 10 (RMB/MONTH)" } do %>
