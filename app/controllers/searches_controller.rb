@@ -6,11 +6,15 @@ class SearchesController < ApplicationController
         @search_qty = Search.all.size
     end
 
+    def test
+        puts "from test"
+        puts params
+    end
+    
+
     def show
         puts params
-        
-        # @keyword = Search.find(params[:id]).keyword
-        # puts "search keyword .... #{@keyword}"
+  
         @record = Dashboard.find(params[:id])
         @keyword = @record.keyword
     
@@ -19,8 +23,6 @@ class SearchesController < ApplicationController
         @job_qty = @jobs.size
 
         puts @record
-        # @average_salary = @search.average_salary
-
         @record.most_opportunities = location_qty(@jobs)
         @record.highest_paying = location_salary(@jobs)
         @record.save
@@ -43,24 +45,10 @@ class SearchesController < ApplicationController
         puts "this is params: #{params}"
         puts "this is search_params: #{search_params}"
         puts search_params['keyword']
-        
-        @keyword = search_params['keyword'].scan(/\w*/).join(" ")
-        puts "after scan: #{@keyword}"
-        if @keyword.empty? || @keyword.strip == ""
-            puts "Chinese..."
-            @keyword = search_params['keyword'].strip
-            puts @keyword
-        else
-            puts "English ..."
-            @keyword = @keyword.capitalize.strip
-        end
 
-        @search = Search.create!(keyword: @keyword)
-        # @search.keyword = @keyword
-        # @search.save
-
-        puts "this is keyword: #{@keyword}"
+        @keyword = search_params['keyword'].strip
         
+        @search = Search.create!(keyword: @keyword)        
         # check if the keyword already be searched
         if Dashboard.find_by(keyword: @keyword)
             puts "already be searched before"
@@ -72,8 +60,9 @@ class SearchesController < ApplicationController
             @new_record = Dashboard.create!(keyword: @keyword)
             @new_record.average_salary = @search.average_salary
             @new_record.jobs = @search.jobs
-            
-            GetKeywordsJob.perform_later(@new_record.id)
+            if @new_record.hot_skills.nil?
+                GetKeywordsJob.perform_later(@new_record.id)
+            end
         end
 
         @new_record.searched_times += 1  
@@ -125,16 +114,6 @@ class SearchesController < ApplicationController
         puts "finish scrappign jobs. Search results: "
         puts @search
     end
-
-    # def scrape_get_keyword(url)
-    #     begin
-    #         html_data = open(url).read
-    #         nokogiri_object = Nokogiri::HTML(html_data)
-    #         content = nokogiri_object.css("div.tBorderTop_box").text.gsub(/\s+/, "")
-    #     rescue
-    #         return ""
-    #     end
-    # end
 
     def salary_converter(salary)
         return nil if salary.empty?
@@ -198,21 +177,4 @@ class SearchesController < ApplicationController
         location_salary.select{|k,v| v.size > 3 }.map {|k, v|[k, (v.sum/v.size).round(2)]}.sort_by {|k,v| v}.reverse
         # need at least 3 data per location
     end
-
-    # def count_word_frequency_en(content)
-    #     # for english words
-    #     words = content.scan(/\w*/).select {|word| !word.empty? && word.to_i == 0 && word.size > 1 && word.size <15}
-    #     word_frequency_en = Hash.new(0)
-    #     words.each { |word| word_frequency_en[word.downcase] += 1 }
-
-    #     stopword_file = 'app/assets/stop_word.json'
-    #     file = File.read(stopword_file)
-    #     stop_words = JSON.parse(file)
-
-    #     stop_words.each do |word|
-    #         word_frequency_en.delete_if {|key, value| key == word}
-    #     end
-    #     word_frequency_en
-    # end
-  
 end

@@ -40,7 +40,7 @@
 
 <div class="summary">
         <% if @search_rank.size > 3 %>
-            <h4>According to the analysis of <%= @job_qty %> unique job posts from <%= @search_qty %> searches so far...</h4>
+            <h4>According to <%= @search_qty %> searches so far...</h4>
             <h4>The most popular keywords are <%= @search_rank[0][0] %>, <%= @search_rank[1][0] %>, <%= @search_rank[2][0] %>...
             <br>
             <%= @chance_rank[0][0] %>, <%= @chance_rank[1][0] %>, <%= @chance_rank[2][0] %>... currently provides most opportunities!</h4>

@@ -1,7 +1,7 @@
 class PagesController < ApplicationController
   def home
     @job_qty = Job.all.size
-    @search_qty = Search.all.size
+    @search_qty = Dashboard.all.map{|i|i.searched_times}.inject(0){|sum,x| sum + x }
     rank_data = rank_data
     @search_rank = search_ranking.first(10)
     @chance_rank = location_chance_rank.first(10)
