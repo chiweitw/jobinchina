@@ -7,6 +7,8 @@ Rails.application.routes.draw do
   post 'searches', to: 'searches#new'
   get 'searches/:id', to: 'searches#show'
 
+  get '/.well-known/acme-challenge/:id' => 'pages#letsencrypt'
+
 
   # Sidekiq Web UI, only for admins.
   require "sidekiq/web"

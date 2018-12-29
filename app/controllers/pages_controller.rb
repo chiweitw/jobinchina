@@ -9,6 +9,11 @@ class PagesController < ApplicationController
     @location_salary_rank = location_salary.first(10)
   end
 
+  def letsencrypt
+    # use your code here, not mine
+    render text: "hX3NtNry9hWNZ8ZhvtuckP7CWRryVgaEZW0k5CrO45c.f4dMbkg-81ONZTsq3ncOB2F-RkMTgBDKURJKgRBr3V0"
+  end
+
   private
 
   def search_ranking
