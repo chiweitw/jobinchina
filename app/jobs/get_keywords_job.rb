@@ -1,3 +1,7 @@
+require 'rubygems'
+require 'rmmseg'
+RMMSeg::Dictionary.load_dictionaries
+
 class GetKeywordsJob < ApplicationJob
   queue_as :default
 
@@ -30,6 +34,7 @@ class GetKeywordsJob < ApplicationJob
     puts results_zh
     @dashboard.high_freq_en = results_en
     @dashboard.high_freq_zh = results_zh
+
     
     @dashboard.save
   end
@@ -63,34 +68,32 @@ class GetKeywordsJob < ApplicationJob
     word_frequency_en
   end
 
-  def count_word_frequency_zh(content)
-    
-    stopword_file = 'app/assets/stop_word_zh.json'
-    file = File.read(stopword_file)
-    stop_words = JSON.parse(file)
-    
-    content = content
+    def count_word_frequency_zh(content)
 
-    stop_words.each do |word|
-        content.delete!(word)
-    end
-
-    puts "after stopword... #{content}"
-
-    word_frequency_zh = Hash.new(0)
-    word_initial_length = 2
-    word_limit_length = 6
-
-    (word_initial_length...word_limit_length).each do |length|
-        content.split("").each_slice(length).to_a.each do |word_array|
-            word = word_array.join("")
-            if word.strip != ""
-              word_frequency_zh[word] += 1
-            end 
+        puts "analysis chinese word freq ..."
+        
+        stopword_file = 'app/assets/stop_word_zh.json'
+        file = File.read(stopword_file)
+        stop_words = JSON.parse(file)
+        
+        stop_words.each do |word|
+            content.delete!(word)
         end
+
+        word_frequency_zh = Hash.new(0)
+        algor = RMMSeg::Algorithm.new(content)
+        loop do
+            tok = algor.next_token
+            break if tok.nil?
+            word = tok.text.force_encoding("UTF-8")
+            word_frequency_zh[word] += 1 if word.strip != "" && word.size > 2
+        end
+        puts word_frequency_zh
+    
+        word_frequency_zh
+
+
     end
-    word_frequency_zh
-end
 
 end
 
