@@ -6,7 +6,8 @@ class CreateDashboards < ActiveRecord::Migration[5.2]
       t.integer :searched_times, default: 0
       t.text :most_opportunities, default: [], array: true
       t.text :highest_paying, default: [], array: true
-      t.text :hot_skills
+      t.text :high_freq_en
+      t.text :high_freq_zh
 
       t.timestamps
     end

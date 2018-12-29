@@ -23,7 +23,21 @@
         margin: 0;
     } 
 }
-
+.jumbotron h4 {
+    display: inline-block;
+}
 .message {
     color: red;
+}
+
+.light-text {
+    color: rgb(98, 98, 186)
+}
+
+.border {
+    border: 1.2px solid black;
+    display: inline-block;
+    padding: 3px 5px;
+    margin: 2px;
+    border-radius: 3px;
 }

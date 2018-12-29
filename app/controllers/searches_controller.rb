@@ -53,6 +53,7 @@ class SearchesController < ApplicationController
         if Dashboard.find_by(keyword: @keyword)
             puts "already be searched before"
             @new_record = Dashboard.find_by(keyword: @keyword)
+
         # if is a new keyword...
         else
             puts "start scraping..."
@@ -60,9 +61,10 @@ class SearchesController < ApplicationController
             @new_record = Dashboard.create!(keyword: @keyword)
             @new_record.average_salary = @search.average_salary
             @new_record.jobs = @search.jobs
-            if @new_record.hot_skills.nil?
-                GetKeywordsJob.perform_later(@new_record.id)
-            end
+  
+            GetKeywordsJob.perform_later(@new_record.id)
+            
+      
         end
 
         @new_record.searched_times += 1  

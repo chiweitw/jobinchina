@@ -12,17 +12,25 @@ class GetKeywordsJob < ApplicationJob
     puts @search
 
     results_en = {}
+    results_zh = {}
     word_frequency_en = {}
     urls = @search.jobs.map{|i| i.url}
     urls.each do |url|
         puts url
         content = scrape_get_keyword(url)
         word_frequency_en = count_word_frequency_en(content)
+        content.gsub!(/[0-9A-Za-z]/, '')
+        word_frequency_zh = count_word_frequency_zh(content)
         results_en = results_en.merge(word_frequency_en){|key, oldval, newval| newval + oldval}
+        results_zh = results_zh.merge(word_frequency_zh){|key, oldval, newval| newval + oldval}
     end
     results_en = results_en.sort_by{|k, v| v}.reverse.first(20)
+    results_zh = results_zh.sort_by{|k, v| v}.reverse.first(20)
     puts results_en
-    @dashboard.hot_skills = results_en
+    puts results_zh
+    @dashboard.high_freq_en = results_en
+    @dashboard.high_freq_zh = results_zh
+    
     @dashboard.save
   end
 
@@ -54,6 +62,35 @@ class GetKeywordsJob < ApplicationJob
     end
     word_frequency_en
   end
+
+  def count_word_frequency_zh(content)
+    
+    stopword_file = 'app/assets/stop_word_zh.json'
+    file = File.read(stopword_file)
+    stop_words = JSON.parse(file)
+    
+    content = content
+
+    stop_words.each do |word|
+        content.delete!(word)
+    end
+
+    puts "after stopword... #{content}"
+
+    word_frequency_zh = Hash.new(0)
+    word_initial_length = 2
+    word_limit_length = 6
+
+    (word_initial_length...word_limit_length).each do |length|
+        content.split("").each_slice(length).to_a.each do |word_array|
+            word = word_array.join("")
+            if word.strip != ""
+              word_frequency_zh[word] += 1
+            end 
+        end
+    end
+    word_frequency_zh
+end
 
 end
 

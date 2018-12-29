@@ -1,4 +1,5 @@
 class Dashboard < ApplicationRecord
-    serialize :hot_skills
+    serialize :high_freq_en
+    serialize :high_freq_zh
     has_many :jobs
 end

@@ -21,7 +21,8 @@ ActiveRecord::Schema.define(version: 2018_12_27_134438) do
     t.integer "searched_times", default: 0
     t.text "most_opportunities", default: [], array: true
     t.text "highest_paying", default: [], array: true
-    t.text "hot_skills"
+    t.text "high_freq_en"
+    t.text "high_freq_zh"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
