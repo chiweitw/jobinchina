@@ -1,31 +1,57 @@
 require 'open-uri'
 
 class SearchesController < ApplicationController
-    def index
-        @job_qty = Job.all.size
-        @search_qty = Search.all.size
-    end
+    # def index
+    #     @job_qty = Job.all.size
+    #     @search_qty = Search.all.size
+    # end
 
-    def test
-        puts "from test"
-        puts params
+    def new
+        # keyword validate
+        puts "this is params: #{params}"
+        puts "this is search_params: #{search_params}"
+        puts search_params['keyword']
+
+        @keyword = search_params['keyword'].strip.capitalize
+        
+        @search = Search.create!(keyword: @keyword)        
+        # check if the keyword already be searched
+        if Dashboard.find_by(keyword: @keyword)
+            puts "already be searched before"
+            @record = Dashboard.find_by(keyword: @keyword)
+          
+        # if is a new keyword...
+        else
+            puts "start scraping..."
+            scraper(@search)
+            @new_record = Dashboard.create!(keyword: @keyword)
+            @new_record.average_salary = @search.average_salary
+            @new_record.jobs = @search.jobs
+  
+            GetKeywordsJob.perform_later(@new_record.id) 
+        end
+
+        @new_record.searched_times += 1  
+        @new_record.save  
+        redirect_to action: "show", id: @new_record   
+     
     end
     
-
     def show
         puts params
   
         @record = Dashboard.find(params[:id])
         @keyword = @record.keyword
-    
-        puts "find 1 record... #{@record} #{@record.keyword}"
+
         @jobs = @record.jobs
-        @job_qty = @jobs.size
+        @job_qty = @jobs.size # add to dashboard
 
         puts @record
         @record.most_opportunities = location_qty(@jobs)
         @record.highest_paying = location_salary(@jobs)
         @record.save
+
+       
 
         @location_qty_percentage = location_qty_percentage(@jobs).first(9)
         sum = 0
@@ -38,38 +64,8 @@ class SearchesController < ApplicationController
         if @job_qty < 5 
             @message = 'Not enough information!'
         end
-    end
 
-    def new
-        # keyword validate
-        puts "this is params: #{params}"
-        puts "this is search_params: #{search_params}"
-        puts search_params['keyword']
-
-        @keyword = search_params['keyword'].strip
         
-        @search = Search.create!(keyword: @keyword)        
-        # check if the keyword already be searched
-        if Dashboard.find_by(keyword: @keyword)
-            puts "already be searched before"
-            @new_record = Dashboard.find_by(keyword: @keyword)
-
-        # if is a new keyword...
-        else
-            puts "start scraping..."
-            scraper(@search)
-            @new_record = Dashboard.create!(keyword: @keyword)
-            @new_record.average_salary = @search.average_salary
-            @new_record.jobs = @search.jobs
-  
-            GetKeywordsJob.perform_later(@new_record.id)
-            
-      
-        end
-
-        @new_record.searched_times += 1  
-        @new_record.save      
-        redirect_to action: "show", id: @new_record
     end
 
     private
@@ -90,6 +86,7 @@ class SearchesController < ApplicationController
             url = URI.parse(URI.escape(url)) # 避免輸入中文錯誤: URI must be ascii only
             html_data = open(url).read
             nokogiri_object = Nokogiri::HTML(html_data, nil, 'GBK') # encode: GBK!
+            
             if total_page.nil?
                 total_page = nokogiri_object.css("div.p_in > span.td").text.match('\d')[0].to_i
             end

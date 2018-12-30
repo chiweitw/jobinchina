@@ -2,7 +2,7 @@ class PagesController < ApplicationController
   def home
     @job_qty = Job.all.size
     @search_qty = Dashboard.all.map{|i|i.searched_times}.inject(0){|sum,x| sum + x }
-    rank_data = rank_data
+    # rank_data = rank_data
     @search_rank = search_ranking.first(10)
     @chance_rank = location_chance_rank.first(10)
     @job_salary_rank = salary_ranking.first(10)
@@ -39,7 +39,6 @@ class PagesController < ApplicationController
     end
     location_qty.sort_by{|k, v| v}.reverse.to_a.first(10)
   end
-
 
   def salary_ranking
       salary_ranking = {}
