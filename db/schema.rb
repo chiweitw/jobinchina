@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_27_134438) do
+ActiveRecord::Schema.define(version: 2018_12_30_190540) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,20 @@ ActiveRecord::Schema.define(version: 2018_12_27_134438) do
     t.text "high_freq_zh"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "job_qty"
+  end
+
+  create_table "job_summaries", force: :cascade do |t|
+    t.integer "qty"
+    t.float "average_salary"
+    t.text "location_qty", default: [], array: true
+    t.text "location_salary", default: [], array: true
+    t.bigint "search_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "url", default: [], array: true
+    t.string "keyword"
+    t.index ["search_id"], name: "index_job_summaries_on_search_id"
   end
 
   create_table "jobs", force: :cascade do |t|
@@ -63,6 +77,7 @@ ActiveRecord::Schema.define(version: 2018_12_27_134438) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "job_summaries", "searches"
   add_foreign_key "jobs", "dashboards"
   add_foreign_key "jobs", "searches"
 end

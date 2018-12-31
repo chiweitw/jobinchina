@@ -18,7 +18,7 @@ class GetKeywordsJob < ApplicationJob
     results_en = {}
     results_zh = {}
     word_frequency_en = {}
-    urls = @search.jobs.map{|i| i.url}
+    urls = @search.job_summary.url
     urls.each do |url|
         puts url
         content = scrape_get_keyword(url)
@@ -34,9 +34,9 @@ class GetKeywordsJob < ApplicationJob
     puts results_zh
     @dashboard.high_freq_en = results_en
     @dashboard.high_freq_zh = results_zh
+    @dashboard.save
 
     
-    @dashboard.save
   end
 
   private

@@ -1,20 +1,17 @@
 require 'open-uri'
 
 class SearchesController < ApplicationController
-    # def index
-    #     @job_qty = Job.all.size
-    #     @search_qty = Search.all.size
-    # end
 
     def new
         # keyword validate
         puts "this is params: #{params}"
         puts "this is search_params: #{search_params}"
-        puts search_params['keyword']
+        @keyword = search_params['keyword'].strip
 
-        @keyword = search_params['keyword'].strip.capitalize
+        # create new search and dashboard
+     
+        @search = Search.create!(keyword: @keyword) 
         
-        @search = Search.create!(keyword: @keyword)        
         # check if the keyword already be searched
         if Dashboard.find_by(keyword: @keyword)
             puts "already be searched before"
@@ -23,17 +20,19 @@ class SearchesController < ApplicationController
         # if is a new keyword...
         else
             puts "start scraping..."
-            scraper(@search)
-            @new_record = Dashboard.create!(keyword: @keyword)
-            @new_record.average_salary = @search.average_salary
-            @new_record.jobs = @search.jobs
+            @record = Dashboard.create!(keyword: @keyword)
+            
+            @job_summary = scraper(@search)
+            @record.average_salary =@job_summary.average_salary
+            @record.job_qty = @job_summary.qty
   
-            GetKeywordsJob.perform_later(@new_record.id) 
+            GetKeywordsJob.perform_later(@record.id) 
         end
 
-        @new_record.searched_times += 1  
-        @new_record.save  
-        redirect_to action: "show", id: @new_record   
+        @record.searched_times += 1  
+        @record.save  
+
+        redirect_to action: "show", id: @record   
      
     end
     
@@ -42,30 +41,15 @@ class SearchesController < ApplicationController
   
         @record = Dashboard.find(params[:id])
         @keyword = @record.keyword
-
-        @jobs = @record.jobs
-        @job_qty = @jobs.size # add to dashboard
-
+        @job_qty = @record.job_qty
+        
         puts @record
-        @record.most_opportunities = location_qty(@jobs)
-        @record.highest_paying = location_salary(@jobs)
+
+        @record.most_opportunities = JobSummary.find_by(keyword: @keyword).location_qty
+        @record.highest_paying = JobSummary.find_by(keyword: @keyword).location_salary
         @record.save
+        @location_qty_percentage = location_qty_percentage(@record.most_opportunities)
 
-       
-
-        @location_qty_percentage = location_qty_percentage(@jobs).first(9)
-        sum = 0
-        @location_qty_percentage.each do |k, v|
-            sum += v
-        end   
-        @location_qty_percentage << ['other', 100 - sum]
-        
-        puts "job qty... #{@job_qty}"
-        if @job_qty < 5 
-            @message = 'Not enough information!'
-        end
-
-        
     end
 
     private
@@ -77,16 +61,18 @@ class SearchesController < ApplicationController
     def scraper(search)
         puts search
         @search = search
-        jobs = []
+        @job_summary = JobSummary.create!(search_id: @search.id)
+        
         page = 1
         total_page = nil
 
+        jobs = []
         loop do 
             url = "https://search.51job.com/list/000000,000000,0000,00,9,99,#{@search.keyword},2,#{page}.html?lang=c&stype=&postchannel=0000&workyear=99&cotype=99&degreefrom=99&jobterm=99&companysize=99&providesalary=99&lonlat=0%2C0&radius=-1&ord_field=0&confirmdate=9&fromType=&dibiaoid=0&address=&line=&specialarea=00&from=&welfare="
             url = URI.parse(URI.escape(url)) # 避免輸入中文錯誤: URI must be ascii only
             html_data = open(url).read
             nokogiri_object = Nokogiri::HTML(html_data, nil, 'GBK') # encode: GBK!
-            
+
             if total_page.nil?
                 total_page = nokogiri_object.css("div.p_in > span.td").text.match('\d')[0].to_i
             end
@@ -98,20 +84,24 @@ class SearchesController < ApplicationController
             locations = nokogiri_object.css("div.el > span.t3").map { |element| element.text }
             salaries = nokogiri_object.css("div.el > span.t4").map { |element| element.text }
             dates = nokogiri_object.css("div.el > span.t5").map { |element| element.text }
-
+            
+            
             (0...titles.size).each do |i|
                 job = {name: titles[i], url: title_links[i], company: companys[i+1], location: locations[i+1], salary: salary_converter(salaries[i+1]), search_id: @search[:id], keyword: @search[:keyword]}
                 @job = Job.new(job)
-                @search.jobs << @job
+                jobs << @job
             end
-
-            @search.average_salary = get_average_salary(@search.jobs)
-            @search.save
             page < total_page ? page += 1 : break
         end
-
-        puts "finish scrappign jobs. Search results: "
-        puts @search
+        # SET JOBSUMMARY DATA
+        @job_summary.qty = jobs.size
+        @job_summary.average_salary = get_average_salary(jobs)
+        @job_summary.location_qty = location_qty(jobs)
+        @job_summary.location_salary =  location_salary(jobs)
+        @job_summary.url = jobs.map{|job| job[:url]}
+        @job_summary.keyword = @search.keyword
+        @job_summary.save
+        @job_summary
     end
 
     def salary_converter(salary)
@@ -154,10 +144,18 @@ class SearchesController < ApplicationController
         location_qty.sort_by{|k, v| v}.reverse.to_a
     end
 
-    def location_qty_percentage(jobs)
-        job_qty = jobs.size
-        location_qty = location_qty(jobs)
+    def location_qty_percentage(location_qty)  
+        job_qty = location_qty.map{ |pair| pair[1].to_i }.sum
+
         location_qty_percentage = location_qty.map { |pair| [pair[0], (pair[1].to_f / job_qty * 100).round(2)] }
+        location_qty_percentage = location_qty_percentage.first(9)
+
+        sum = 0 
+        location_qty_percentage.each do |k, v|
+            sum += v
+        end   
+        location_qty_percentage << ['other', 100 - sum]
+        location_qty_percentage
     end
 
     def location_salary(jobs)
@@ -172,7 +170,6 @@ class SearchesController < ApplicationController
                 end
             end
         end
-
         location_salary.select{|k,v| v.size > 3 }.map {|k, v|[k, (v.sum/v.size).round(2)]}.sort_by {|k,v| v}.reverse
         # need at least 3 data per location
     end
