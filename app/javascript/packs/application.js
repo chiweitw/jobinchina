@@ -1,5 +1,5 @@
 import { loadDynamicBannerText } from '../components/banner';
-loadDynamicBannerText();
+
 
 
 if (document.querySelector('.search_page')){
@@ -92,7 +92,7 @@ function show(id){
 
 
 if (document.querySelector('.home_page')){
-   
+    loadDynamicBannerText();
     // VALIDATE USER SEARCH TERM
     let form = document.querySelector('.form')
     form.onsubmit = function validateForm() {

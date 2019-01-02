@@ -140,7 +140,12 @@ Dashboard.all.each do |dashboard|
     puts dashboard.keyword
     if temp[dashboard.keyword] > 0
         puts "this keyword already existed"
-        qty = 
+        searched_times = dashboard.searched_times
+        keyword = dashboard.keyword
+        dashboard.destroy!
+        existed = Dashboard.find_by(keyword: keyword)
+        existed.searched_times += searched_times
+        existed.save
     else
         temp[dashboard.keyword] += 1
     end
