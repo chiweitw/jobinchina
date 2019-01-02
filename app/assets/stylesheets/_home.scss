@@ -30,3 +30,17 @@
         text-align: initial;
     }
 }
+
+.typejs {
+    font-size: 30px;
+    color: white;
+    position: absolute;
+    top: 120px;
+}
+
+@media(max-width: 660px) {
+    .typejs {
+        display: none;
+    }
+}
+

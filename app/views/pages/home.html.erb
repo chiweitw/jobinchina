@@ -1,7 +1,8 @@
 <div class="banner">
+    <div class="typejs"><span id="banner-typed-text"></span></div>
     <div class="form-container">
         <%= simple_form_for Search.new, :url => searches_path, :method => :post, html: { class: 'form text-center' } do |f| %>
-            <%= f.input :keyword, label: false, placeholder: 'Please enter job keyword. e.g. Rails', required: true %>
+            <%= f.input :keyword, label: false, placeholder: 'Enter a job keywords. e.g. Big Data', required: true %>
             <div id="search-message" class="text-center"><i class="fas fa-spinner fa-spin"></i> Analyzing...</div>
         <% end %>
     </div>

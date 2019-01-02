@@ -58,7 +58,7 @@ class PagesController < ApplicationController
         location_salary_sum = location_salary_sum.merge(location_salary_sum_element){|key, oldval, newval| newval.to_f + oldval.to_f}
     end
     
-    location_salary = location_salary_sum.map{|k,v| [k,v.to_f / location_qty[k].to_i ] }.sort_by {|k,v| v}.reverse
+    location_salary = location_salary_sum.map{|k,v| [k,(v.to_f / location_qty[k].to_i).round(2) ] }.sort_by {|k,v| v}.reverse
   end
 end
 

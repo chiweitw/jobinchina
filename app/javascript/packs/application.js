@@ -1,5 +1,5 @@
-// console.log('Hello World from Webpacker')
-
+import { loadDynamicBannerText } from '../components/banner';
+loadDynamicBannerText();
 
 
 if (document.querySelector('.search_page')){
@@ -92,7 +92,7 @@ function show(id){
 
 
 if (document.querySelector('.home_page')){
-
+   
     // VALIDATE USER SEARCH TERM
     let form = document.querySelector('.form')
     form.onsubmit = function validateForm() {
@@ -114,6 +114,7 @@ if (document.querySelector('.home_page')){
     show('show_popular');    
     let tabs = document.querySelectorAll('.tab');
     let chart_section = document.querySelector('.chart-section');
+    let content=""
     
     tabs.forEach((tab) => {
         tab.addEventListener('click', function () {

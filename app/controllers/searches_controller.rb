@@ -6,7 +6,7 @@ class SearchesController < ApplicationController
         # keyword validate
         puts "this is params: #{params}"
         puts "this is search_params: #{search_params}"
-        @keyword = search_params['keyword'].strip
+        @keyword = search_params['keyword'].upcase.strip
 
         # create new search and dashboard
      

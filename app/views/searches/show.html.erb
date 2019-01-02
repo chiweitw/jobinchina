@@ -27,7 +27,7 @@
                 </h4><br/>
             <% end %>
 
-            <h4>English High Frequency Words: 
+            <h4>High Frequency English Words: 
             <% if @record.high_freq_en %>
                 <% @record.high_freq_en.first(10).each do |item| %>
                     <div class="border"><%= item[0] %></div>
@@ -38,7 +38,7 @@
             <% end %>
             </h4><br/>
 
-            <h4>Chinese High Frequency Words:
+            <h4>High Frequency Chinese Words:
             <% if @record.high_freq_zh %>
                 <% @record.high_freq_zh.first(10).each do |item| %>
                     <div class="border"><%= item[0] %></div>
