@@ -3,5 +3,4 @@ class Search < ApplicationRecord
     validates :keyword, presence: true
     serialize :skills
     has_one :job_summary
-
 end

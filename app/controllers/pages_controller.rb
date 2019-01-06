@@ -1,5 +1,12 @@
 class PagesController < ApplicationController
   def home
+
+    # meta-tags
+    @page_title = 'Explore trending jobs!'
+    @page_description = 'A website provide job market analysis in China.'
+    @page_keywords = "China, Job, Market, Analysis"
+    
+ 
     @search_qty = Dashboard.all.map{|i|i.searched_times}.inject(0){|sum,x| sum + x }
     @search_rank = search_ranking.first(10)
     @chance_rank = location_chance_rank.first(10)

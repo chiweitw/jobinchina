@@ -32,14 +32,14 @@ class SearchesController < ApplicationController
         @record.searched_times += 1  
         @record.save  
 
-        redirect_to action: "show", id: @record   
+        redirect_to action: "show", id: @record
      
     end
     
     def show
         puts params
   
-        @record = Dashboard.find(params[:id])
+        @record = Dashboard.friendly.find(params[:id])
         @keyword = @record.keyword
         @job_qty = @record.job_qty
         
@@ -49,6 +49,11 @@ class SearchesController < ApplicationController
         @record.highest_paying = JobSummary.find_by(keyword: @keyword).location_salary
         @record.save
         @location_qty_percentage = location_qty_percentage(@record.most_opportunities)
+
+        # meta-tags
+        @page_title = @keyword
+        @page_description = "Analysis based on #{@job_qty} job related to #{@keyword}"
+        @page_keywords = "China, #{@keyword}"
 
     end
 
